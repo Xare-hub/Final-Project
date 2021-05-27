@@ -40,6 +40,8 @@ model.load_weights(pre_trained_weights)
 #RUNNING THE MODEL
 import numpy as np
 from keras.preprocessing import image
+import tkinter as tk
+from tkinter import filedialog
 
 def one_hot(index):
     array = np.zeros((1,15))
@@ -50,14 +52,18 @@ tree_classes = [1,10,11,12,13,14,15,2,3,4,5,6,7,8,9]        #<-- Define the alph
 again = 'yes'
 # os.chdir(r'C:\Users\javie\OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey\Universidad\8vo Semestre\Intelligent Systems Technology\Final Project\Data\RealImages') #<-- Change directory to the one inside the parenthesis
 os.chdir(r'C:\Users\javie\OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey\Universidad\8vo Semestre\Intelligent Systems Technology\Final Project\Data\Test_set') #<-- Change directory to the one inside the parenthesis
-Test_set_dir = r'C:\Users\javie\OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey\Universidad\8vo Semestre\Intelligent Systems Technology\Final Project\Data\Test_set'
+# Test_set_dir = r'C:\Users\javie\OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey\Universidad\8vo Semestre\Intelligent Systems Technology\Final Project\Data\Test_set'
 
 while (again == 'yes'):
+    root = tk.Tk()
+    root.withdraw()
+    Test_set_dir = filedialog.askdirectory()
+    os.chdir(Test_set_dir)
+
     Incorrect_predictions = []
     Total_Correct_predictions = 0
     Total_predictions = 0
     Accuracy = 0
-    os.chdir(Test_set_dir) #<-- Change directory to the one inside the parenthesis
     number_of_folders = len(os.listdir())
     i = 0                                                                       #set counter which will tell me in which folder I am
     for Folder in os.listdir():

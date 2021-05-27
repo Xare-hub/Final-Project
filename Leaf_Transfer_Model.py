@@ -91,7 +91,7 @@ history = model.fit_generator(train_generator,
                             validation_steps=3,
                             callbacks = callbacks)
 
-model.save(r"Trained_models\Transfer_weights_on250epochs.h5")
+model.save(r"Trained_models\Transfer_weights_on250epochs_callback.h5")
 
 import matplotlib.pyplot as plt
 acc = history.history['categorical_accuracy']

@@ -29,6 +29,8 @@ print('Last layer output shape: ', last_layer.output_shape)
 last_output = last_layer.output                                         #Get the oututs of that last layer, which will be fed to the new model
 
 from tensorflow.keras.optimizers import RMSprop
+import tkinter as tk
+from tkinter import filedialog
 
 #Define the new model which will go on top of the last layer from the Inception model
 #Flatten the output layer to 1 dimension
@@ -42,7 +44,11 @@ x = layers.Dense(15, activation = 'softmax')(x)
 
 model = Model(pre_trained_model.input, x)
 
-pre_trained_model2 = r'Trained_models\Transfer_weights_on250epochs_callbackon230.h5'          # Add the newly defined model architecture on top of the Inception v3 model definition.
+root = tk.Tk()
+root.withdraw()
+
+input('\n\n\nSelect the data weights next: \n\n\n')
+pre_trained_model2 = filedialog.askopenfilename()
 
 model.load_weights(pre_trained_model2)                                          # Load the weights from the previously trained model
 
@@ -57,15 +63,18 @@ def one_hot(index):
 
 tree_classes = [1,10,11,12,13,14,15,2,3,4,5,6,7,8,9]        #<-- Define the alphanumeric order of the classes, which is how tensorflow outputs the predictions
 again = 'yes'
-# os.chdir(r'C:\Users\javie\OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey\Universidad\8vo Semestre\Intelligent Systems Technology\Final Project\Data\RealImages') #<-- Change directory to the one inside the parenthesis
-os.chdir(r'C:\Users\javie\OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey\Universidad\8vo Semestre\Intelligent Systems Technology\Final Project\Data\Test_set') #<-- Change directory to the one inside the parenthesis
-Test_set_dir = r'C:\Users\javie\OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey\Universidad\8vo Semestre\Intelligent Systems Technology\Final Project\Data\RealImages'
+
 while (again == 'yes'):
+    input('\n\n\nSelect test directory next: \n\n\n')
+    root = tk.Tk()
+    root.withdraw()
+    Test_set_dir = filedialog.askdirectory()
+    os.chdir(Test_set_dir)
+
+    Incorrect_predictions = []
     Accuracy = 0
     Total_Correct_predictions = 0
     Total_predictions = 0
-    print(os.listdir())
-    os.chdir(Test_set_dir) #<-- Change directory to the one inside the parenthesis
     i = 0                                                                       # Set counter which will tell me in which folder I am
     for Folder in os.listdir():
         Class_correct_predictions = 0
@@ -100,6 +109,7 @@ while (again == 'yes'):
                 else:
                     print('INCORRECTLY CLASSIFIED\n')
                     Class_wrong_predictions += 1
+                    Incorrect_predictions.append(file)
             print('-----------------------------------------------------------------------')
             print('Correct_predictions for class {}: {}\nWrong predictions for class {}: {}'.format(tree_classes[i],Class_correct_predictions,tree_classes[i],Class_wrong_predictions))
             print('-----------------------------------------------------------------------\n\n\n')
@@ -108,4 +118,9 @@ while (again == 'yes'):
     print('Total predictions: ' + str(Total_predictions))
     print('Total correct predictions: ' + str(Total_Correct_predictions))
     print('Accuracy: ' + str(Accuracy) + '\n\n')
+
+    for i in range(len(Incorrect_predictions)):                                 #Prints incorrectly predicted images
+        print(Incorrect_predictions[i])
+    Incorrect_predictions *= 0
+    
     again = input("Do you want to make another prediction?: ")
