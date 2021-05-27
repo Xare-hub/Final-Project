@@ -52,44 +52,61 @@ again = 'yes'
 os.chdir(r'C:\Users\javie\OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey\Universidad\8vo Semestre\Intelligent Systems Technology\Final Project\Data\Test_set') #<-- Change directory to the one inside the parenthesis
 Test_set_dir = r'C:\Users\javie\OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey\Universidad\8vo Semestre\Intelligent Systems Technology\Final Project\Data\Test_set'
 
-Incorrect_predictions = []
 while (again == 'yes'):
-    Correct_predictions = 0
+    Incorrect_predictions = []
+    Total_Correct_predictions = 0
+    Total_predictions = 0
     Accuracy = 0
-    os.chdir(r'C:\Users\javie\OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey\Universidad\8vo Semestre\Intelligent Systems Technology\Final Project\Data\Test_set') #<-- Change directory to the one inside the parenthesis
+    os.chdir(Test_set_dir) #<-- Change directory to the one inside the parenthesis
     number_of_folders = len(os.listdir())
     i = 0                                                                       #set counter which will tell me in which folder I am
     for Folder in os.listdir():
+        Class_correct_predictions = 0
+        Class_wrong_predictions = 0
         current_path = os.path.join(Test_set_dir, Folder)
         os.chdir(current_path)
-        Total_predictions = len(os.listdir()) * number_of_folders
         True_class = one_hot(i)                                                 #Create array of 14 0's and one 1 where the true class is in the i'th position
 
-        for file in os.listdir():                                               # For each file in the current directory (Predict images)
-            path = os.path.abspath(file)
-            img = image.load_img(path, target_size=(150, 150))
-            x = image.img_to_array(img)
-            x = np.expand_dims(x, axis=0)
-            x = x/255
-            images = np.vstack([x])
-            classes = model.predict(images, batch_size=1)
-            print(file)
+        if (len(os.listdir()) != 0):
+            print('*************************************************************************')
+            for file in os.listdir():
+                Total_predictions += 1                                             # For each file in the current directory (Predict images)
+                path = os.path.abspath(file)
+                img = image.load_img(path, target_size=(150, 150))
+                x = image.img_to_array(img)
+                x = np.expand_dims(x, axis=0)
+                x = x/255
+                images = np.vstack([x])
+                classes = model.predict(images, batch_size=1)
+                print(file)
 
-            # print(True_class)
-            Prediction_vector = one_hot(np.argmax(classes[0]))
-            # print(Prediction_vector)
+                # print(True_class)
+                # print(Prediction_vector)
+                index = np.argmax(classes[0])
+                probability = classes[0][index] * 100
+                print('Predicted class {}, probability: {}\nTrue class: {}'.format(tree_classes[index], probability, tree_classes[i]))
+                Prediction_vector = one_hot(index)
 
-            index = np.argmax(classes[0])
-            probability = classes[0][index] * 100
-            print('Class {}, probability: {}'.format(tree_classes[index], probability))
-            if ((Prediction_vector==True_class).all()):
-                Correct_predictions += 1
-            else:
-                print('INCORRECTLY CLASSIFIED!\n')
-                Incorrect_predictions.append(file)                              #Gets incorrectly classified examples
+                if ((Prediction_vector==True_class).all()):
+                    Total_Correct_predictions += 1
+                    Class_correct_predictions += 1
+                else:
+                    print('INCORRECTLY CLASSIFIED!\n')
+                    Class_wrong_predictions += 1
+                    Incorrect_predictions.append(file)                              #Gets incorrectly classified examples
+
+            print('-----------------------------------------------------------------------')
+            print('Correct_predictions for class {}: {}\nWrong predictions for class {}: {}'.format(tree_classes[i],Class_correct_predictions,tree_classes[i],Class_wrong_predictions))
+            print('-----------------------------------------------------------------------\n\n\n')
+
         i += 1
-    Accuracy = Correct_predictions/Total_predictions
-    print(Accuracy)
-    for i in range(len(Incorrect_predictions)):
+    Accuracy = Total_Correct_predictions/Total_predictions
+    print('Total predictions: ' + str(Total_predictions))
+    print('Total correct predictions: ' + str(Total_Correct_predictions))
+    print('Accuracy: ' + str(Accuracy) + '\n\n')
+
+    for i in range(len(Incorrect_predictions)):                                 #Prints incorrectly predicted images
         print(Incorrect_predictions[i])
+    Incorrect_predictions *= 0
+
     again = input("Do you want to make another prediction?: ")
