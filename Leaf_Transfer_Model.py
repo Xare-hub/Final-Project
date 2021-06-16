@@ -10,7 +10,7 @@ from keras_preprocessing import image
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications.inception_v3 import InceptionV3
 
-local_weights_file = r'inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5'
+local_weights_file = r'inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5'    # Load the pre-trained weights
 
 pre_trained_model = InceptionV3(input_shape = (150, 150,3),              #Create an instance of a model with inception's model structure
                                 include_top = False,                    #Do not include the top layer
